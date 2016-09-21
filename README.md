@@ -72,7 +72,7 @@ Add content after the second paragraph in this content:
 <p>third top-level paragraph</p>
 ```
 
-For this example pretend the above HTML content is stored inside the $content variable.
+For this example pretend the above HTML content is stored inside the `$content` variable.
 
 ```php
 <?php
