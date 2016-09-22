@@ -3,13 +3,10 @@ namespace keesiemeijer\Insert_Content;
 
 /**
  * Insert Content Between HTML Paragraphs.
- *
- * Use these functions to insert content after a number of paragraphs in a string containing HTML (with paragraphs).
- * These functions are not intended for inserting content in full HTML pages (with a doctype, head and body).
- * The content you want to insert can contain HTML as well.
- *
- * License: GPL-2.0+
- *
+ * 
+ * Functions to insert content after a number of paragraphs in a string containing HTML (with paragraphs).
+ * For more information visit: https://github.com/keesiemeijer/insert-content
+ * 
  * Insert Content Between HTML Paragraphs is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
@@ -22,6 +19,10 @@ namespace keesiemeijer\Insert_Content;
  *
  * You should have received a copy of the GNU General Public License
  * along with Additional Content. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * @license GPL-2.0+
+ * @author  keesiemeijer
+ * @version 1.0.0
  */
 
 
