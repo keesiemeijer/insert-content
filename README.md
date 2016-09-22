@@ -7,6 +7,8 @@ Insert content (like ads or related posts) to a string that's already formatted 
 ## Features
 * Insert content after the middle paragraph (default)
 * Insert content after a set number of paragraphs
+* Exclude nested paragraphs (default)
+* Inserted content can contain HTML as well. 
 
 ### Nested Paragraphs
 Only top-level (non nested) HTML paragraphs are used to add content after. Let's say you wanted to add content after the second paragraph in this content.
@@ -22,27 +24,27 @@ Only top-level (non nested) HTML paragraphs are used to add content after. Let's
 <p>third top-level paragraph</p>
 ```
 
-Most funtions (or scripts) that are similar to this one would wrongly add your content inside the `<blockquote>` element.
-* Use the `top_level_p_only` parameter to include nested paragraphs as well.
+Most functions (or scripts) that are similar to this one would wrongly add your content inside the `<blockquote>` element.
+* Use the `top_level_p_only` argument to include nested paragraphs as well.
 
 ### Insert Position
-By default content is inserted in the middle of all paragraphs. In other words, if the HTML content contains four paragraphs it will be inserted after the second. 
-* Use the `insert_after_p` parameter to insert content after a number of paragraphs instead of in the middle.
+By default content is inserted after the middle paragraph. In other words, if the HTML content contains four paragraphs it will be inserted after the second.
+* Use the `insert_after_p` argument to insert content after a number of paragraphs instead of in the middle.
 
 ### No Paragraphs Found
-The content you want to insert will be added to the end if no paragraphs were found to add content to.
-* Use the `insert_if_no_p` parameter to not append content if no paragraphs are found.
+The content you want to insert will be added at the end if no paragraphs were found. Equally so, if you've set it to insert content after a set number of paragraphs, and not enough paragraphs were found, it's inserted after the last found paragraph.
+* Use the `insert_if_no_p` argument to not append content if no (or not enough) paragraphs are found.
 
-### Parent HTML Element For Inserted Content
+### Inserted Content
 The inserted content will be wrapped in a HTML paragraph element `<p></p>` by default.
-* Use the `parent_element` parameter to wrap the inserted content in any other block-level HTML element.
+* Use the `parent_element` argument to wrap the inserted content in any other block-level HTML element.
 
 As a bonus the content you want to insert can contain HTML as well.
 
 **Note**: These functions are not intended for inserting content in full HTML pages (with a doctype, head and body). They are for inserting content after a number of paragraphs in a string containing HTML (with paragraphs), like blog post content.
 
 ## Usage
-Include the `insert-content.php` file in your project to make use of the `insert_content()` fuction.
+Include the `insert-content.php` file in your project to make use of the `insert_content()` function.
 
 ```php
 <?php echo keesiemeijer\Insert_Content\insert_content( $content, $insert_content, $args ); ?>
@@ -93,7 +95,7 @@ $args = array(
 );
 
 // Content you want to insert (without the parent element HTML tag)
-$insert_content = 'I was inserted after the second paragraph';
+$insert_content = 'I was inserted after the <strong>second</strong> paragraph';
 
 echo keesiemeijer\Insert_Content\insert_content( $content, $insert_content, $args );
 ?>
@@ -107,6 +109,6 @@ The output for this example is this.
 	<p>This is a nested paragraph</p><!-- not a top-level paragraph -->
 </blockquote>
 <p>second top-level paragraph</p>
-<p>I was inserted after the second paragraph</p>
+<p>I was inserted after the <strong>second</strong> paragraph</p>
 <p>third top-level paragraph</p>
 ```
