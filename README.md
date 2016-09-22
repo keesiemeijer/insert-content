@@ -1,10 +1,15 @@
 # Insert Content Between HTML Paragraphs [![Build Status](https://travis-ci.org/keesiemeijer/insert-content.svg?branch=master)](http://travis-ci.org/keesiemeijer/insert-content) #
 
-PHP functions to insert content between or after HTML paragraphs the right way, without regular expressions.
+PHP functions to insert content between or after HTML paragraphs the right way, without using regular expressions.
 
-Insert content (like ads or related posts) to a string that's already formatted with HTML markup. It finds the HTML paragraph tags in the HTML content with the PHP [DOM module](https://secure.php.net/manual/en/book.dom.php).
+Insert content (like ads or related posts) to a string that's already formatted with HTML markup. The PHP [DOM module](https://secure.php.net/manual/en/book.dom.php) is used to add content after paragraphs
 
-By default it finds only top-level (non nested) HTML paragraphs. Let's say you wanted to add content after the second paragraph in this content.
+## Features
+* Insert content after the middle paragraph (default)
+* Insert content after a set number of paragraphs
+
+### Nested Paragraphs
+Only top-level (non nested) HTML paragraphs are used to add content after. Let's say you wanted to add content after the second paragraph in this content.
 
 ```html
 <div>a div with content</div>
@@ -17,13 +22,20 @@ By default it finds only top-level (non nested) HTML paragraphs. Let's say you w
 <p>third top-level paragraph</p>
 ```
 
-Most funtions (or scripts) that are similar to this one would wrongly add your content inside the `<blockquote>` element. Use the `top_level_p_only` parameter to include nested paragraphs as well.
+Most funtions (or scripts) that are similar to this one would wrongly add your content inside the `<blockquote>` element.
+* Use the `top_level_p_only` parameter to include nested paragraphs as well.
 
-By default content is inserted in the middle of all paragraphs. In other words, if the HTML content contains four paragraphs it will be inserted after the second. Use the `insert_after_p` parameter to insert content after a number of paragraphs instead of in the middle.
+### Insert Position
+By default content is inserted in the middle of all paragraphs. In other words, if the HTML content contains four paragraphs it will be inserted after the second. 
+* Use the `insert_after_p` parameter to insert content after a number of paragraphs instead of in the middle.
 
-The content you want to insert will be appended to the HTML content if it doesn't contain any paragraphs Use the `insert_if_no_p` parameter to not append content if no paragraphs are found.
+### No Paragraphs Found
+The content you want to insert will be added to the end if no paragraphs were found to add content to.
+* Use the `insert_if_no_p` parameter to not append content if no paragraphs are found.
 
-The inserted content will be wrapped in a HTML paragraph element `<p></p>` by default. Use the `parent_element` parameter to wrap the inserted content in any other block-level HTML element.
+### Parent HTML Element For Inserted Content
+The inserted content will be wrapped in a HTML paragraph element `<p></p>` by default.
+* Use the `parent_element` parameter to wrap the inserted content in any other block-level HTML element.
 
 As a bonus the content you want to insert can contain HTML as well.
 
