@@ -26,20 +26,20 @@ Only top-level (non nested) HTML paragraphs are used to add content after. Let's
 <p>third top-level paragraph</p>
 ```
 
-Most functions (or scripts) that are similar to this one would wrongly add your content inside the `<blockquote>` element.
-* Use the `top_level_p_only` argument to include nested paragraphs as well.
+Most functions (or scripts) that are similar to this one would wrongly add your content ater the second `<p>` inside the `<blockquote>` element.
+* Use the `top_level_p_only` [argument](https://github.com/keesiemeijer/insert-content#parameters) to include nested paragraphs as well.
 
 ### Insert Position
 By default content is inserted after the middle paragraph. In other words, if the HTML content contains four paragraphs it will be inserted after the second.
-* Use the `insert_after_p` argument to insert content after a number of paragraphs instead of in the middle.
+* Use the `insert_after_p` [argument](https://github.com/keesiemeijer/insert-content#parameters) to insert content after a number of paragraphs instead of in the middle.
 
 ### No Paragraphs Found
 The content you want to insert will be added at the end if no paragraphs were found. Equally so, if you've set it to insert content after a set number of paragraphs, and not enough paragraphs were found, it's inserted after the last found paragraph.
-* Use the `insert_if_no_p` argument to not append content if no (or not enough) paragraphs are found.
+* Use the `insert_if_no_p` [argument](https://github.com/keesiemeijer/insert-content#parameters) to not append content if no (or not enough) paragraphs are found.
 
 ### Inserted Content
 The inserted content will be wrapped in a HTML paragraph element `<p></p>` by default.
-* Use the `parent_element` argument to wrap the inserted content in any other block-level HTML element.
+* Use the `parent_element` [argument](https://github.com/keesiemeijer/insert-content#parameters) to wrap the inserted content in any other block-level HTML element.
 
 ## Usage
 Include the `insert-content.php` file in your project to make use of the `insert_content()` function.
