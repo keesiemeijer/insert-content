@@ -1,8 +1,10 @@
 # Insert Content Between HTML Paragraphs [![Build Status](https://travis-ci.org/keesiemeijer/insert-content.svg?branch=master)](http://travis-ci.org/keesiemeijer/insert-content) #
 
-PHP functions to insert content between or after HTML paragraphs the right way, without using regular expressions.
+PHP functions to insert content between or after HTML paragraphs the right way, ***without*** using regular expressions.
 
-Insert content (like ads or related posts) to a string that's already formatted with HTML markup. The PHP [DOM module](https://secure.php.net/manual/en/book.dom.php) is used to add content after paragraphs
+Insert content to a string with HTML markup. The PHP [DOM module](https://secure.php.net/manual/en/book.dom.php) is used to find and add the content after paragraphs.
+
+**Note**: These functions are not intended for inserting content in full HTML pages (with a doctype, head and body).
 
 ## Features
 * Insert content after the middle paragraph (default)
@@ -38,10 +40,6 @@ The content you want to insert will be added at the end if no paragraphs were fo
 ### Inserted Content
 The inserted content will be wrapped in a HTML paragraph element `<p></p>` by default.
 * Use the `parent_element` argument to wrap the inserted content in any other block-level HTML element.
-
-As a bonus the content you want to insert can contain HTML as well.
-
-**Note**: These functions are not intended for inserting content in full HTML pages (with a doctype, head and body). They are for inserting content after a number of paragraphs in a string containing HTML (with paragraphs), like blog post content.
 
 ## Usage
 Include the `insert-content.php` file in your project to make use of the `insert_content()` function.
