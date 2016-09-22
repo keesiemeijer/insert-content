@@ -47,10 +47,14 @@ As a bonus the content you want to insert can contain HTML as well.
 Include the `insert-content.php` file in your project to make use of the `insert_content()` function.
 
 ```php
-<?php echo keesiemeijer\Insert_Content\insert_content( $content, $insert_content, $args ); ?>
+<?php
+require 'path/to/insert-content.php';
+
+echo keesiemeijer\Insert_Content\insert_content( $content, $insert_content, $args ); 
+?>
 ```
 
-The default optional arguments are:
+The defaults for the optional arguments ($args) are:
 ```php
 $args = array(
 	'parent_element'   => 'p',
