@@ -156,11 +156,12 @@ function get_defaults() {
 function get_node_indexes( $nodes, $args ) {
 	$args     = array_merge( get_defaults(), (array) $args );
 	$nodelist = array();
-	foreach (  $nodes as $key => $node ) {
-		$nodelist[] = $key;
-		if ( (bool) $args['top_level_p_only'] && 'body' !== $node->parentNode->nodeName ) {
+	$length = $nodes->length;
+	for ( $i = 0; $i < $length; ++$i ) {
+		$nodelist[] = $i;
+		if ( (bool) $args['top_level_p_only'] && 'body' !== $nodes->item( $i )->parentNode->nodeName ) {
 			// Remove nested paragraphs from the list.
-			unset( $nodelist[ $key ] );
+			unset( $nodelist[ $i ] );
 		}
 	}
 	return array_values( $nodelist );
