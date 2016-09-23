@@ -3,10 +3,10 @@ namespace keesiemeijer\Insert_Content;
 
 /**
  * Insert Content Between HTML Paragraphs.
- * 
+ *
  * Functions to insert content after a number of paragraphs in a string containing HTML (with paragraphs).
  * For more information visit: https://github.com/keesiemeijer/insert-content
- * 
+ *
  * Insert Content Between HTML Paragraphs is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
@@ -19,7 +19,7 @@ namespace keesiemeijer\Insert_Content;
  *
  * You should have received a copy of the GNU General Public License
  * along with Additional Content. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * @license GPL-2.0+
  * @author  keesiemeijer
  * @version 1.0.0
@@ -35,14 +35,16 @@ namespace keesiemeijer\Insert_Content;
  * If no paragraphs are found in the HTML the inserted contend will be appended to the HTML.
  *
  * Note: The content you want to insert will be wrapped a HTML paragraph element (<p></p>) by default.
- *       Use the $args['parent_element'] parameter to change it to another Block-level HTML element.
+ *       Use the $args['insert_element'] parameter to change it to another Block-level HTML element.
  *
  * @param string  $content        String of content (with paragraphs) where you want to insert content in.
  * @param string  $insert_content String of content you want to insert.
  * @param array   $args           {
  *     Optional. Array with optional arguments.
  *
- *     @type string    $parent_element        Block-level HTML element the inserted content ($insert_content) is wrapped in.
+ *     @type string    $parent_element_id     Parent element id to search paragraphs in.
+ *                                            Default: empty string. Search for paragraphs in the entire content.
+ *     @type string    $insert_element        Block-level HTML element the inserted content ($insert_content) is wrapped in.
  *                                            Default 'p'. (e.g. 'p', 'div', etc.)
  *     @type int       $insert_after_p        Insert content after a number of paragraphs.
  *                                            Default empty string. The content is inserted after the middle paragraph.
@@ -64,18 +66,44 @@ function insert_content( $content, $insert_content = '', $args = array() ) {
 	}
 
 	$args['insert_after_p'] = abs( intval( $args['insert_after_p'] ) );
-	$args['parent_element'] = !empty( $args['parent_element'] ) ? $args['parent_element'] : 'p';
+	$args['insert_element'] = !empty( $args['insert_element'] ) ? $args['insert_element'] : 'p';
 
 	// Content with parent HTML element to be inserted.
-	$insert_content = "<{$args['parent_element']}>{$insert_content}</{$args['parent_element']}>";
+	$insert_content = "<{$args['insert_element']}>{$insert_content}</{$args['insert_element']}>";
 
 	$nodes = new \DOMDocument();
 
 	// Load the HTML nodes from the content.
 	@$nodes->loadHTML( $content );
 
-	// Get all paragraphs from the content.
-	$p = $nodes->getElementsByTagName( 'p' );
+	$parent_element = false;
+
+	if ( !empty( $args['parent_element_id'] ) ) {
+		$parent_element = $nodes->getElementById( trim( (string) $args['parent_element_id'] ) );
+
+		if ( !$parent_element ) {
+			// Could not find the parent element.
+			return $content;
+		}
+
+		// Get all paragraphs from the parent element in the content.
+		$p = $parent_element->getElementsByTagName( 'p' );
+	} else {
+		// Get all paragraphs from the content.
+		$p = $nodes->getElementsByTagName( 'p' );
+	}
+
+	$insert_nodes = new \DOMDocument();
+
+	// Load the nodes from the content that's inserted.
+	// Using loadHTML() here allows for malformed HTML.
+	@$insert_nodes->loadHTML( $insert_content );
+
+	$insert_element = $insert_nodes->getElementsByTagName( $args['insert_element'] )->item( 0 );
+
+	if ( !$insert_element ) {
+		return $content;
+	}
 
 	// Get paragraph indexes
 	$nodelist = get_node_indexes( $p, $args );
@@ -83,39 +111,17 @@ function insert_content( $content, $insert_content = '', $args = array() ) {
 	// Check if paragraphs are found.
 	if ( !empty( $nodelist ) ) {
 
-		$insert_nodes = new \DOMDocument();
-
-		// Load the nodes from the content that's inserted.
-		// Using loadHTML() here allows for malformed HTML.
-		@$insert_nodes->loadHTML( $insert_content );
-
-		$parent_node = $insert_nodes->getElementsByTagName( $args['parent_element'] )->item( 0 );
-		if ( !$parent_node ) {
-			return $content;
-		}
-
 		// Get the index to insert content after.
-		$insert_index = get_insert_index( $nodelist, $args );
+		$insert_index = get_item_index( $nodelist, $args );
 
 		if ( false === $insert_index ) {
 			return $content;
 		}
 
-		$insert_node  = $p->item( $nodelist[ $insert_index ] );
-		$next_sibling = $insert_node->nextSibling;
+		$insert_node = $p->item( $insert_index );
 
-		if ( $next_sibling ) {
-			// get sibling element (exluding text nodes and whitespace).
-			$next_sibling = nextElementSibling( $insert_node );
-		}
-
-		if ( $next_sibling ) {
-			// Insert before next sibling.
-			$next_sibling->parentNode->insertBefore( $nodes->importNode( $parent_node, true ), $next_sibling );
-		} else {
-			// Insert as child of parent element.
-			$insert_node->parentNode->appendChild( $nodes->importNode( $parent_node, true ) );
-		}
+		// Insert the nodes
+		insert_nodes( $nodes, $insert_node, $insert_element );
 
 		$html = get_HTML( $nodes );
 
@@ -123,9 +129,25 @@ function insert_content( $content, $insert_content = '', $args = array() ) {
 			$content = $html;
 		}
 	} else {
-		// Insert HTML after content if no paragraphs are found.
+		// No paragraphs found
+
 		if ( (bool) $args['insert_if_no_p'] ) {
-			$content .= $insert_content;
+
+
+			if ( $parent_element ) {
+				// Insert contnt after parent element
+				insert_nodes( $nodes, $parent_element, $insert_element );
+
+				$html = get_HTML( $nodes );
+
+				if ( $html ) {
+					$content = $html;
+				}
+			
+			} else {
+				// Add insert content after the content/ 
+				$content .= $insert_content;
+			}
 		}
 	}
 
@@ -139,10 +161,11 @@ function insert_content( $content, $insert_content = '', $args = array() ) {
  */
 function get_defaults() {
 	return array(
-		'parent_element'   => 'p',
-		'insert_after_p'   => '',
-		'insert_if_no_p'   => true,
-		'top_level_p_only' => true,
+		'parent_element_id' => '',
+		'insert_element'    => 'p',
+		'insert_after_p'    => '',
+		'insert_if_no_p'    => true,
+		'top_level_p_only'  => true,
 	);
 }
 
@@ -158,9 +181,23 @@ function get_node_indexes( $nodes, $args ) {
 	$args     = array_merge( get_defaults(), (array) $args );
 	$nodelist = array();
 	$length = $nodes->length;
+
 	for ( $i = 0; $i < $length; ++$i ) {
-		$nodelist[] = $i;
-		if ( (bool) $args['top_level_p_only'] && 'body' !== $nodes->item( $i )->parentNode->nodeName ) {
+		$nodelist[ ] = $i;
+		$parent = false;
+		$node = $nodes->item( $i );
+
+		if ( !empty( $args['parent_element_id'] ) ) {
+			if ( $node->parentNode->hasAttribute( 'id' ) ) {
+				$parent_id = $node->parentNode->getAttribute( 'id' );
+				$parent = ( $args['parent_element_id'] === $parent_id );
+			}
+		} else {
+			// check if 'body' is parent node
+			$parent = ( 'body' === $node->parentNode->nodeName );
+		}
+
+		if ( (bool) $args['top_level_p_only'] && !$parent ) {
 			// Remove nested paragraphs from the list.
 			unset( $nodelist[ $i ] );
 		}
@@ -176,7 +213,7 @@ function get_node_indexes( $nodes, $args ) {
  * @param array   $args     Optional arguments. See: get_defaults().
  * @return int|false        Index of the (paragraph) node or false.
  */
-function get_insert_index( $nodelist, $args ) {
+function get_item_index( $nodelist, $args ) {
 
 	if ( empty( $nodelist ) ) {
 		return false;
@@ -187,7 +224,6 @@ function get_insert_index( $nodelist, $args ) {
 	end( $nodelist );
 
 	$last         = key( $nodelist );
-	$last_index   = $nodelist[ $last ];
 	$count        = count( $nodelist );
 	$insert_index = abs( intval( $args['insert_after_p'] ) );
 
@@ -198,10 +234,10 @@ function get_insert_index( $nodelist, $args ) {
 		if ( 1 < $count ) {
 			// More than one paragraph found.
 			// Get middle position to insert the HTML.
-			$insert_index = floor( $count / 2 ) -1;
+			$insert_index = $nodelist[ floor( $count / 2 ) -1 ];
 		} else {
 			// One paragraph
-			$insert_index = $last_index;
+			$insert_index = $last;
 		}
 	} else {
 		// start counting at 0.
@@ -211,14 +247,39 @@ function get_insert_index( $nodelist, $args ) {
 		if ( $insert_index > $count  ) {
 			if ( $args['insert_if_no_p'] ) {
 				// insert after last paragraph.
-				$insert_index = $last_index;
+				$insert_index = $last;
 			} else {
 				return false;
 			}
 		}
 	}
 
-	return $insert_index;
+	return $nodelist[ $insert_index ];
+}
+
+/**
+ * Insert content nodes
+ * 
+ * @param  object $nodes       DOMNodeList instance containing all nodes.
+ * @param  object $insert_node DOMElement object to insert nodes after
+ * @param  object $insert      DOMElement object to insert
+ * @return void
+ */
+function insert_nodes( $nodes, $insert_node, $insert ) {
+	$next_sibling = $insert_node->nextSibling;
+
+	if ( $next_sibling ) {
+		// get sibling element (exluding text nodes and whitespace).
+		$next_sibling = nextElementSibling( $insert_node );
+	}
+
+	if ( $next_sibling ) {
+		// Insert before next sibling.
+		$next_sibling->parentNode->insertBefore( $nodes->importNode( $insert, true ), $next_sibling );
+	} else {
+		// Insert as child of parent element.
+		$insert_node->parentNode->appendChild( $nodes->importNode( $insert, true ) );
+	}
 }
 
 /**
