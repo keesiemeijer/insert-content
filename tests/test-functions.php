@@ -308,6 +308,19 @@ class Insert_Content_Test extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals( $this->strip_ws( $expected ),  $this->strip_ws( $insert ) );
 	}
 
+	public function test_insert_element_arg() {
+
+		$content  = "<p>first paragraph</p><p>second paragraph</p>";
+		$expected = "<p>first paragraph</p><div>inserted div</div><p>second paragraph</p>";
+
+		$args = array( 'insert_element' => 'div' );
+
+		$insert_content = "inserted div";
+		$insert         = insert_content( $content, $insert_content, $args );
+
+		$this->assertEquals( $this->strip_ws( $expected ),  $this->strip_ws( $insert ) );
+	}
+
 	public function test_insert_after_p2_empty_content() {
 
 		$content  = '';
@@ -337,10 +350,12 @@ class Insert_Content_Test extends \PHPUnit_Framework_TestCase {
 	function strip_ws( $txt ) {
 		$lines = explode( "\n", $txt );
 		$result = array();
-		foreach ( $lines as $line )
-			if ( trim( $line ) )
+		foreach ( $lines as $line ) {
+			if ( trim( $line ) ) {
 				$result[] = trim( $line );
+			}
+		}
 
-			return trim( join( "", $result ) );
+		return trim( join( "", $result ) );
 	}
 }
