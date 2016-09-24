@@ -4,8 +4,6 @@ PHP functions to insert content between or after HTML paragraphs the right way, 
 
 Insert content in a string containing HTML markup. The PHP [DOM module](https://secure.php.net/manual/en/book.dom.php) is used to find and add the content after paragraphs.
 
-**Note**: These functions are not intended for inserting content in full HTML pages (with a doctype, head and body).
-
 ## Features
 * Insert content after the middle paragraph (default)
 * Insert content after a set number of paragraphs
