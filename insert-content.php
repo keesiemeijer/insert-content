@@ -1,6 +1,4 @@
 <?php
-namespace keesiemeijer\Insert_Content;
-
 /**
  * Insert Content Between HTML Paragraphs.
  *
@@ -25,6 +23,9 @@ namespace keesiemeijer\Insert_Content;
  * @author  keesiemeijer
  * @version 1.0.0
  */
+
+
+namespace keesiemeijer\Insert_Content;
 
 
 /**
@@ -105,7 +106,7 @@ function insert_content( $content, $insert_content = '', $args = array() ) {
 		return $content;
 	}
 
-	// Get paragraph indexes
+	// Get paragraph indexes where content should be inserted after.
 	$nodelist = get_node_indexes( $p, $args );
 
 	// Check if paragraphs are found.
@@ -134,7 +135,7 @@ function insert_content( $content, $insert_content = '', $args = array() ) {
 					$content = $html;
 				}
 			} else {
-				// Add insert content after the content/
+				// Add insert content after the content.
 				$content .= $insert_content;
 			}
 		}
@@ -147,7 +148,7 @@ function insert_content( $content, $insert_content = '', $args = array() ) {
  * Inserts nodes
  *
  * @param object $nodes          DOMNodeList instance containing all elements.
- * @param object $insert_element DOMElement object to insert
+ * @param object $insert_element DOMElement object to insert.
  * @param object $p              DOMNodeList instance containing all the p elements.
  * @param array  $nodelist       Array with HTML paragraph indexes.
  * @param array  $args           Optional arguments. See: insert_content().
@@ -160,7 +161,7 @@ function insert_nodes( $nodes, $insert_element, $p, $nodelist, $args ) {
 		$node_count = count( $nodelist );
 		$step       = (int) $args['insert_every_p'];
 
-		if( ( $step + $step ) > $node_count ) {
+		if ( ( $step + $step ) > $node_count ) {
 			$args['insert_every_p'] = '';
 			$args['insert_after_p'] = $step;
 			return insert_node( $nodes, $insert_element, $p, $nodelist, $args );
@@ -187,7 +188,7 @@ function insert_nodes( $nodes, $insert_element, $p, $nodelist, $args ) {
  * Inserts a node.
  *
  * @param object $nodes          DOMNodeList instance containing all elements.
- * @param object $insert_element DOMElement object to insert
+ * @param object $insert_element DOMElement object to insert.
  * @param object $p              DOMNodeList instance containing all the p elements.
  * @param array  $nodelist       Array with HTML paragraph indexes.
  * @param array  $args           Optional arguments. See: insert_content().
@@ -203,7 +204,7 @@ function insert_node( $nodes, $insert_element, $p, $nodelist, $args  ) {
 	// Insert content after this (paragraph) node.
 	$insert_node = $p->item( $insert_index );
 
-	// Insert the nodes
+	// Insert the nodes.
 	insert_content_element( $nodes, $insert_node, $insert_element );
 	return true;
 }
@@ -230,7 +231,7 @@ function get_defaults() {
  *
  * @param object $nodes DOMNodeList instance containing all the p elements.
  * @param array  $args  Optional arguments. See: insert_content().
- * @return array         Array with HTML paragraph indexes.
+ * @return array        Array with HTML paragraph indexes.
  */
 function get_node_indexes( $nodes, $args ) {
 	$args      = array_merge( get_defaults(), (array) $args );
@@ -246,7 +247,7 @@ function get_node_indexes( $nodes, $args ) {
 		if ( $parent_id  ) {
 			if ( $node->parentNode->hasAttribute( 'id' ) ) {
 				$parent_id_attr = $node->parentNode->getAttribute( 'id' );
-				$parent = ( $parent_id  === $parent_id_attr );
+				$parent = ( $parent_id === $parent_id_attr );
 			}
 		} else {
 			$parent = ( 'body' === $node->parentNode->nodeName );
@@ -267,7 +268,7 @@ function get_node_indexes( $nodes, $args ) {
  *
  * @param array $nodelist Array with HTML paragraph indexes.
  * @param array $args     Optional arguments. See: insert_content().
- * @return int|false        Index of the (paragraph) node or false.
+ * @return int|false Index of the (paragraph) node or false.
  */
 function get_item_index( $nodelist, $args ) {
 
@@ -289,7 +290,7 @@ function get_item_index( $nodelist, $args ) {
 			// Get middle position to insert the HTML.
 			$insert_index = $nodelist[ floor( $count / 2 ) - 1 ];
 		} else {
-			// One paragraph
+			// One paragraph.
 			$insert_index = $last;
 		}
 	} else {
@@ -313,9 +314,9 @@ function get_item_index( $nodelist, $args ) {
 /**
  * Insert an element (and it's child elements) in the content.
  *
- * @param object $nodes       DOMNodeList instance containing all nodes.
- * @param object $insert_node DOMElement object to insert nodes after
- * @param object $insert      DOMElement object to insert
+ * @param object $nodes          DOMDocument Object for the content.
+ * @param object $insert_node    DOMElement object to insert nodes after.
+ * @param object $insert_element DOMElement object to insert.
  * @return void
  */
 function insert_content_element( $nodes, $insert_node, $insert_element ) {
@@ -338,8 +339,8 @@ function insert_content_element( $nodes, $insert_node, $insert_element ) {
 /**
  * Returns the next sibling of a node.
  *
- * @param object $node DOMElement object
- * @return object       sibling object
+ * @param object $node DOMElement paragraph object.
+ * @return object Next sibling object.
  */
 function nextElementSibling( $node ) {
 	while ( $node && ( $node = $node->nextSibling ) ) {
@@ -354,8 +355,8 @@ function nextElementSibling( $node ) {
  * Returns the HTML from a DOMDocument object as a string.
  * Returns only the HTML from the body element (added by DOMDocument->saveHTML()).
  *
- * @param object $nodes DOMDocument object.
- * @return string        Html.
+ * @param object $nodes DOMDocument Object for the content.
+ * @return string Html.
  */
 function get_HTML( $nodes ) {
 	$body_node = $nodes->getElementsByTagName( 'body' )->item( 0 );
