@@ -1,0 +1,18 @@
+{
+	"name": "keesiemeijer/insert-content",
+	"description": "Insert content in strings with HTML",
+	"type": "library",
+	"homepage": "https://github.com/keesiemeijer/insert-content",
+	"license": "GPL-2.0+",
+	"authors"    : [
+		{
+			"name"    : "keesiemeijer",
+			"homepage": "https://github.com/keesiemeijer",
+			"role"    : "Developer"
+		}
+	],
+	"minimum-stability": "stable",
+	"autoload": {
+		"files": ["insert-content.php"]
+	}
+}
