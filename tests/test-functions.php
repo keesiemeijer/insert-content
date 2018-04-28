@@ -308,12 +308,38 @@ class Insert_Content_Test extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals( $this->strip_ws( $expected ),  $this->strip_ws( $insert ) );
 	}
 
+	public function test_insert_encoding_utf8() {
+		// Checks if content is encoded utf-8
+		$content = '<p>イリノイ州シカゴにて、アイルランド系の家庭に、9</p><p>2</p>';
+		$expected = '<p>イリノイ州シカゴにて、アイルランド系の家庭に、9</p><p>inserted paragraph</p><p>2</p>';
+
+		$args = array( 'insert_after_p' => 1 );
+
+		$insert_content = "inserted paragraph";
+		$insert         = insert_content( $content, $insert_content, $args );
+
+		$this->assertEquals( $this->strip_ws( $expected ),  $this->strip_ws( $insert ) );
+	}
+
 	public function test_insert_element_arg() {
 
 		$content  = "<p>first paragraph</p><p>second paragraph</p>";
 		$expected = "<p>first paragraph</p><div>inserted div</div><p>second paragraph</p>";
 
 		$args = array( 'insert_element' => 'div' );
+
+		$insert_content = "inserted div";
+		$insert         = insert_content( $content, $insert_content, $args );
+
+		$this->assertEquals( $this->strip_ws( $expected ),  $this->strip_ws( $insert ) );
+	}
+
+	public function test_empty_insert_element_arg() {
+
+		$content  = "<p>first paragraph</p><p>second paragraph</p>";
+		$expected = "<p>first paragraph</p><p>inserted div</p><p>second paragraph</p>";
+
+		$args = array( 'insert_element' => '' );
 
 		$insert_content = "inserted div";
 		$insert         = insert_content( $content, $insert_content, $args );
@@ -341,6 +367,114 @@ class Insert_Content_Test extends \PHPUnit_Framework_TestCase {
 
 		$args = array( 'insert_after_p' => 2, 'top_level_p_only' => false, 'parent_element_id' => 'parent' );
 
+		$insert_content = "inserted paragraph";
+		$insert         = insert_content( $content, $insert_content, $args );
+
+		$this->assertEquals( $this->strip_ws( $expected ),  $this->strip_ws( $insert ) );
+	}
+
+	public function test_insert_after_every_2_p() {
+
+		$content  = "<p>1</p><p>2</p><p>3</p><p>4</p><p>5</p>";
+		$expected = "<p>1</p><p>2</p><p>inserted paragraph</p><p>3</p><p>4</p><p>inserted paragraph</p><p>5</p>";
+
+		$args = array( 	'insert_every_p' => 2 );
+		$insert_content = "inserted paragraph";
+		$insert         = insert_content( $content, $insert_content, $args );
+
+		$this->assertEquals( $this->strip_ws( $expected ),  $this->strip_ws( $insert ) );
+	}
+
+	public function test_insert_after_every_2_p_insert_element() {
+
+		$content  = "<p>1</p><p>2</p><p>3</p><p>4</p><p>5</p>";
+		$expected = "<p>1</p><p>2</p><div>inserted paragraph</div><p>3</p><p>4</p><div>inserted paragraph</div><p>5</p>";
+
+		$args = array( 	'insert_every_p' => 2, 'insert_element' => 'div' );
+		$insert_content = "inserted paragraph";
+		$insert         = insert_content( $content, $insert_content, $args );
+
+		$this->assertEquals( $this->strip_ws( $expected ),  $this->strip_ws( $insert ) );
+	}
+
+	public function test_insert_after_every_1_p() {
+
+		$content  = "<p>1</p><p>2</p><p>3</p>";
+		$expected = "<p>1</p><p>inserted paragraph</p><p>2</p><p>inserted paragraph</p><p>3</p><p>inserted paragraph</p>";
+
+		$args = array( 	'insert_every_p' => 1 );
+		$insert_content = "inserted paragraph";
+		$insert         = insert_content( $content, $insert_content, $args );
+
+		$this->assertEquals( $this->strip_ws( $expected ),  $this->strip_ws( $insert ) );
+	}
+
+	public function test_insert_after_every_2_p_three_paragraphs() {
+
+		$content  = "<p>1</p><p>2</p><p>3</p>";
+		$expected = "<p>1</p><p>2</p><p>inserted paragraph</p><p>3</p>";
+
+		$args = array( 	'insert_every_p' => 2 );
+		$insert_content = "inserted paragraph";
+		$insert         = insert_content( $content, $insert_content, $args );
+
+		$this->assertEquals( $this->strip_ws( $expected ),  $this->strip_ws( $insert ) );
+	}
+
+	public function test_insert_after_every_2_p_one_paragraph() {
+
+		$content  = "<p>1</p>";
+		$expected = "<p>1</p><p>inserted paragraph</p>";
+
+		$args = array( 	'insert_every_p' => 2 );
+		$insert_content = "inserted paragraph";
+		$insert         = insert_content( $content, $insert_content, $args );
+
+		$this->assertEquals( $this->strip_ws( $expected ),  $this->strip_ws( $insert ) );
+	}
+
+	public function test_insert_after_every_2_p_no_paragraphs() {
+
+		$content  = "<div>1</div>";
+		$expected = "<div>1</div><p>inserted paragraph</p>";
+
+		$args = array( 	'insert_every_p' => 2 );
+		$insert_content = "inserted paragraph";
+		$insert         = insert_content( $content, $insert_content, $args );
+
+		$this->assertEquals( $this->strip_ws( $expected ),  $this->strip_ws( $insert ) );
+	}
+
+	public function test_not_insert_after_every_2_p_no_paragraphs() {
+
+		$content  = "<div>1</div>";
+		$expected = "<div>1</div>";
+
+		$args = array( 	'insert_every_p' => 2, 'insert_if_no_p' => false );
+		$insert_content = "inserted paragraph";
+		$insert         = insert_content( $content, $insert_content, $args );
+
+		$this->assertEquals( $this->strip_ws( $expected ),  $this->strip_ws( $insert ) );
+	}
+
+	public function test_insert_after_every_2_p_with_child() {
+
+		$content  = "<p>1</p><p>2</p><blockquote><p>child p</p></blockquote><p>3</p><p>4</p><p>5</p>";
+		$expected = "<p>1</p><p>2</p><p>inserted paragraph</p><blockquote><p>child p</p></blockquote><p>3</p><p>4</p><p>inserted paragraph</p><p>5</p>";
+
+		$args = array( 	'insert_every_p' => 2 );
+		$insert_content = "inserted paragraph";
+		$insert         = insert_content( $content, $insert_content, $args );
+
+		$this->assertEquals( $this->strip_ws( $expected ),  $this->strip_ws( $insert ) );
+	}
+
+	public function test_insert_after_every_2_p_parent_element() {
+
+		$content  = '<p>1</p><p>2</p><div id="my-id"><p>1</p><p>2</p><p>3</p><p>4</p></div><p>3</p>';
+		$expected = '<p>1</p><p>2</p><div id="my-id"><p>1</p><p>2</p><p>inserted paragraph</p><p>3</p><p>4</p><p>inserted paragraph</p></div><p>3</p>';
+
+		$args = array( 	'insert_every_p' => 2, 'parent_element_id' => 'my-id' );
 		$insert_content = "inserted paragraph";
 		$insert         = insert_content( $content, $insert_content, $args );
 
