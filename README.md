@@ -44,6 +44,7 @@ The inserted content will be wrapped in a HTML paragraph element `<p></p>` by de
 
 ## Usage
 Include the `insert-content.php` file in your project to make use of the `insert_content()` function.
+Or require it in your project with composer `require keesiemeijer/insert-content`
 
 ```php
 <?php
