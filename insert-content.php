@@ -80,7 +80,7 @@ function insert_content( $content, $insert_content = '', $args = array() ) {
 	$nodes = new \DOMDocument();
 
 	// Load the HTML nodes from the content.
-	@$nodes->loadHTML( $content );
+	@$nodes->loadHTML( mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' ) );
 
 	if ( $args['parent_element_id'] ) {
 		$parent_element = $nodes->getElementById( $args['parent_element_id'] );
@@ -98,7 +98,7 @@ function insert_content( $content, $insert_content = '', $args = array() ) {
 	}
 
 	$insert_nodes = new \DOMDocument();
-	@$insert_nodes->loadHTML( $insert_content );
+	@$insert_nodes->loadHTML( mb_convert_encoding( $insert_content, 'HTML-ENTITIES', 'UTF-8' ) );
 
 	$insert_element = $insert_nodes->getElementsByTagName( $args['insert_element'] )->item( 0 );
 
