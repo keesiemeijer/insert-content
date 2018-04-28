@@ -7,6 +7,7 @@ Insert content in a string containing HTML markup. The PHP [DOM module](https://
 ## Features
 * Insert content after the middle paragraph (default)
 * Insert content after a set number of paragraphs
+* Insert content after every number of paragraphs
 * Exclude nested paragraphs (default)
 * Inserted content can contain HTML as well. 
 
@@ -31,6 +32,7 @@ Most functions (or scripts) that are similar to this one would wrongly add your 
 ### Insert Position
 By default content is inserted after the middle paragraph. In other words, if the HTML content contains four paragraphs it will be inserted after the second.
 * Use the `insert_after_p` [argument](https://github.com/keesiemeijer/insert-content#parameters) to insert content after a number of paragraphs instead of in the middle.
+* Or use the `insert_every_p` [argument](https://github.com/keesiemeijer/insert-content#parameters) to insert content after every number of paragraphs instead of in the middle.
 
 ### No Paragraphs Found
 The content you want to insert will be added at the end if no paragraphs were found. Equally so, if you've set it to insert content after a set number of paragraphs, and not enough paragraphs were found, it's inserted after the last found paragraph. If you're using the `parent_element_id` argument and no paragraphs are found in that element the content will be inserted after the parent element.
@@ -57,6 +59,7 @@ $args = array(
 	'parent_element_id' => '',
 	'insert_element'   => 'p',
 	'insert_after_p'   => '',
+	'insert_every_p'   => '',
 	'insert_if_no_p'   => true,
 	'top_level_p_only' => true,
 );
@@ -72,6 +75,8 @@ $args = array(
   * `insert_element` (string) Block-level HTML element the inserted content (`$insert_content`) is wrapped in.
   Default: 'p'. (e.g. 'p', 'div', etc.)
   * `insert_after_p` (int) Insert content after a number of paragraphs.
+  Default: empty string. The content is inserted after the middle paragraph.
+  * `insert_every_p` (int) Insert content after every number of paragraphs.
   Default: empty string. The content is inserted after the middle paragraph.
   * `insert_if_no_p` (boolean) Insert content even if the required number of paragraphs from `insert_after_p` (above) are not found.
   Default: true. Insert after the last paragraph. (inserts after the content if no paragraphs are found).
