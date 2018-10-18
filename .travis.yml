@@ -19,3 +19,4 @@ before_script:
       else
         composer global require "phpunit/phpunit=4.8.*"
       fi
+      echo phpunit --version
