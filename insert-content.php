@@ -74,9 +74,6 @@ function insert_content( $content, $insert_content = '', $args = array() ) {
 	$args['insert_every_p']    = abs( intval( $args['insert_every_p'] ) );
 	$parent_element            = false;
 
-	// Content wrapped in the parent HTML element (to be inserted).
-	$insert_content = "<{$args['insert_element']}>{$insert_content}</{$args['insert_element']}>";
-
 	$nodes = new \DOMDocument();
 
 	// Load the HTML nodes from the content.
@@ -98,6 +95,11 @@ function insert_content( $content, $insert_content = '', $args = array() ) {
 	}
 
 	$insert_nodes = new \DOMDocument();
+
+	// Content wrapped in the parent HTML element (to be inserted).
+	$insert_content = "<{$args['insert_element']}>{$insert_content}</{$args['insert_element']}>";
+
+	// Load the HTML nodes from the content to insert.
 	@$insert_nodes->loadHTML( mb_convert_encoding( $insert_content, 'HTML-ENTITIES', 'UTF-8' ) );
 
 	$insert_element = $insert_nodes->getElementsByTagName( $args['insert_element'] )->item( 0 );

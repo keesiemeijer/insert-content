@@ -310,13 +310,24 @@ class Insert_Content_Test extends \PHPUnit_Framework_TestCase {
 
 	public function test_insert_encoding_utf8() {
 		// Checks if content is encoded utf-8
-		$content = '<p>イリノイ州シカゴにて、アイルランド系の家庭に、9</p><p>2</p>';
-		$expected = '<p>イリノイ州シカゴにて、アイルランド系の家庭に、9</p><p>inserted paragraph</p><p>2</p>';
+		$content = '<p>イリノイ州シカゴにて、アイルランド系の家庭に、9 äöüß</p><p>2</p>';
+		$expected = '<p>イリノイ州シカゴにて、アイルランド系の家庭に、9 äöüß</p><p>inserted paragraph</p><p>2</p>';
 
 		$args = array( 'insert_after_p' => 1 );
 
 		$insert_content = "inserted paragraph";
 		$insert         = insert_content( $content, $insert_content, $args );
+
+		$this->assertEquals( $this->strip_ws( $expected ),  $this->strip_ws( $insert ) );
+	}
+
+	public function test_insert_encoding_utf8_no_p() {
+		// Checks if content is encoded utf-8
+		$content = '<div>イリノイ州シカゴにて、アイルランド系の家庭に、9</div>';
+		$expected = '<div>イリノイ州シカゴにて、アイルランド系の家庭に、9</div><p>äöüß</p>';
+
+		$insert_content = "äöüß";
+		$insert         = insert_content( $content, $insert_content );
 
 		$this->assertEquals( $this->strip_ws( $expected ),  $this->strip_ws( $insert ) );
 	}
