@@ -40,7 +40,7 @@ The content you want to insert will be added at the end if no paragraphs were fo
 
 ### Inserted Content
 The inserted content will be wrapped in a HTML paragraph element `<p></p>` by default.
-* Use the `insert_element` [argument](https://github.com/keesiemeijer/insert-content#parameters) to wrap the inserted content in any other block-level HTML element.
+* Use the `insert_element` [argument](https://github.com/keesiemeijer/insert-content#parameters) to wrap the inserted content in any other block-level HTML element. Change the element to `div` if you want to insert content containing block-level HTML tags.
 
 ## Usage
 Include the `insert-content.php` file in your project to make use of the `insert_content()` function.
@@ -69,7 +69,7 @@ $args = array(
 ### Parameters
 
 * `$content` (string)(required) String of content (with paragraphs) you want to add content in between.
-* `$insert_content` (string) String of content you want to insert.
+* `$insert_content` (string or array) String of content you want to insert. Use an array of content strings if you want to insert differt content with the `insert_every_p` argument below.
 * `$args` (array) Array with optional arguments
   * `parent_element_id` (string) Parent element id (without #) to search paragraphs in.
   Default: empty string. Search for paragraphs in the entire content.

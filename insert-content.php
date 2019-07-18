@@ -21,12 +21,27 @@
  *
  * @license GPL-2.0+
  * @author  keesiemeijer
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 
 namespace keesiemeijer\Insert_Content;
 
+/**
+ * Get default arguments.
+ *
+ * @return array Array with default arguments.
+ */
+function get_defaults() {
+	return array(
+		'parent_element_id' => '',
+		'insert_element'    => 'p',
+		'insert_after_p'    => '',
+		'insert_every_p'    => '',
+		'insert_if_no_p'    => true,
+		'top_level_p_only'  => true,
+	);
+}
 
 /**
  * Insert content in HTML (containing HTML paragraphs).
@@ -39,9 +54,9 @@ namespace keesiemeijer\Insert_Content;
  * Note: The content you want to insert will be wrapped a HTML paragraph element (<p></p>) by default.
  *       Use the $args['insert_element'] parameter to change it to another Block-level HTML element.
  *
- * @param string $content        String of content (with paragraphs) where you want to insert content in.
- * @param string $insert_content String of content you want to insert.
- * @param array  $args           {
+ * @param string       $content        String of content (with paragraphs) where you want to insert content in.
+ * @param string|array $insert_content String of content you want to insert or array of content strings for the $insert_every_p argument.
+ * @param array        $args           {
  *     Optional. Array with optional arguments.
  *
  *     @type string    $parent_element_id     Parent element id to search paragraphs in.
@@ -53,18 +68,20 @@ namespace keesiemeijer\Insert_Content;
  *     @type bool      $insert_if_no_p        Insert content even if the required number of paragraphs from 'insert_after_p' (above) are not found.
  *                                            Default true. Insert after the last paragraph.
  *                                            Or insert after the content if no paragraphs are found.
+ *     @type int       $insert_every_p        Insert content after every number of paragraphs.
  *     @type bool      $top_level_p_only      Insert content after top level paragraphs only.
  *                                            Default true (recommended)
  * }
  * @return string      String with inserted content.
  */
 function insert_content( $content, $insert_content = '', $args = array() ) {
-
-	$args = array_merge( get_defaults(), (array) $args );
-
-	if ( empty( $insert_content ) ) {
+	$insert_content = is_string( $insert_content ) ? array( $insert_content ) : $insert_content;
+	if ( empty( $insert_content ) || ! is_array( $insert_content ) ) {
 		return $content;
 	}
+
+	$insert_content = array_values( $insert_content );
+	$args           = array_merge( get_defaults(), (array) $args );
 
 	// Validate arguments.
 	$args['parent_element_id'] = trim( (string) $args['parent_element_id'] );
@@ -94,17 +111,8 @@ function insert_content( $content, $insert_content = '', $args = array() ) {
 		$p = $nodes->getElementsByTagName( 'p' );
 	}
 
-	$insert_nodes = new \DOMDocument();
-
-	// Content wrapped in the parent HTML element (to be inserted).
-	$insert_content = "<{$args['insert_element']}>{$insert_content}</{$args['insert_element']}>";
-
-	// Load the HTML nodes from the content to insert.
-	@$insert_nodes->loadHTML( mb_convert_encoding( $insert_content, 'HTML-ENTITIES', 'UTF-8' ) );
-
-	$insert_element = $insert_nodes->getElementsByTagName( $args['insert_element'] )->item( 0 );
-
-	if ( ! $insert_element ) {
+	$insert_elements = get_insert_elements( $insert_content, $args );
+	if ( ! $insert_elements ) {
 		return $content;
 	}
 
@@ -114,7 +122,7 @@ function insert_content( $content, $insert_content = '', $args = array() ) {
 	// Check if paragraphs are found.
 	if ( ! empty( $nodelist ) ) {
 
-		$inserted = insert_nodes( $nodes, $insert_element, $p, $nodelist, $args );
+		$inserted = insert_nodes( $nodes, $insert_elements, $p, $nodelist, $args );
 
 		if ( ! $inserted ) {
 			return $content;
@@ -130,13 +138,14 @@ function insert_content( $content, $insert_content = '', $args = array() ) {
 
 			if ( $parent_element ) {
 				// Insert content after parent element.
-				insert_content_element( $nodes, $parent_element, $insert_element );
+				insert_content_element( $nodes, $parent_element, $insert_elements[0] );
 
 				$html = get_HTML( $nodes );
 				if ( $html ) {
 					$content = $html;
 				}
 			} else {
+				$insert_content = "<{$args['insert_element']}>{$insert_content[0]}</{$args['insert_element']}>";
 				// Add insert content after the content.
 				$content .= $insert_content;
 			}
@@ -149,40 +158,61 @@ function insert_content( $content, $insert_content = '', $args = array() ) {
 /**
  * Inserts nodes
  *
- * @param object $nodes          DOMNodeList instance containing all elements.
- * @param object $insert_element DOMElement object to insert.
- * @param object $p              DOMNodeList instance containing all the p elements.
- * @param array  $nodelist       Array with HTML paragraph indexes.
- * @param array  $args           Optional arguments. See: insert_content().
+ * @param object $nodes           DOMNodeList instance containing all elements.
+ * @param array  $insert_elements Array of DOMElement objects to insert.
+ * @param object $p               DOMNodeList instance containing all the p elements.
+ * @param array  $nodelist        Array with HTML paragraph indexes.
+ * @param array  $args            Optional arguments. See: insert_content().
  * @return bool True if the node was inserted.
  */
-function insert_nodes( $nodes, $insert_element, $p, $nodelist, $args ) {
+function insert_nodes( $nodes, $insert_elements, $p, $nodelist, $args ) {
+	// Back compat
+	$insert_elements = is_string( $insert_elements ) ? array( $insert_elements ) : $insert_elements;
+	$insert_elements = array_values( $insert_elements );
+
 	$_args = $args;
 	if ( $args['insert_every_p'] ) {
-
 		$node_count = count( $nodelist );
 		$step       = (int) $args['insert_every_p'];
 
 		if ( ( $step + $step ) > $node_count ) {
 			$args['insert_every_p'] = '';
 			$args['insert_after_p'] = $step;
-			return insert_node( $nodes, $insert_element, $p, $nodelist, $args );
+			return insert_node( $nodes, $insert_elements[0], $p, $nodelist, $args );
 		}
 
 		$inserted = false;
 		$range    = range( $step, $node_count, $step );
-		$range    = array_values( array_reverse( $range ) );
+
+		// Loop backwards when inserting to not change the nodes indexes.
+		$range = array_values( array_reverse( $range ) );
+
+		$range_count = count( $range );
+		$el_index    = 0;
+		$last_index  = 0;
+
+		// Find the last index
 		foreach ( $range as $index ) {
+			$el_index = isset( $insert_elements[ $el_index ] ) ? $el_index : 0;
+			$last_index = $el_index;
+			$el_index++;
+		}
+
+		$el_index = $last_index;
+		foreach ( $range as $key => $index ) {
 			$_args['insert_after_p'] = $index;
-			$inserted = insert_node( $nodes, $insert_element, $p, $nodelist, $_args );
+			$el_index = isset( $insert_elements[ $el_index ] ) ? $el_index : 0;
+
+			$inserted = insert_node( $nodes, $insert_elements[ $el_index ], $p, $nodelist, $_args );
 			if ( ! $inserted ) {
 				break;
 			}
+			$el_index++;
 		}
 
 		return $inserted;
 	} else {
-		return insert_node( $nodes, $insert_element, $p, $nodelist, $args );
+		return insert_node( $nodes, $insert_elements[0], $p, $nodelist, $args );
 	}
 }
 
@@ -212,19 +242,95 @@ function insert_node( $nodes, $insert_element, $p, $nodelist, $args  ) {
 }
 
 /**
- * Get default arguments.
+ * Insert an element (and it's child elements) in the content.
  *
- * @return array Array with default arguments.
+ * @param object $nodes          DOMDocument Object for the content.
+ * @param object $insert_node    DOMElement object to insert nodes after.
+ * @param object $insert_element DOMElement object to insert.
+ * @return void
  */
-function get_defaults() {
-	return array(
-		'parent_element_id' => '',
-		'insert_element'    => 'p',
-		'insert_after_p'    => '',
-		'insert_every_p'    => '',
-		'insert_if_no_p'    => true,
-		'top_level_p_only'  => true,
-	);
+function insert_content_element( $nodes, $insert_node, $insert_element ) {
+	$next_sibling = isset( $insert_node->nextSibling ) ? $insert_node->nextSibling : false;
+
+	if ( $next_sibling ) {
+		// get sibling element (exluding text nodes and whitespace).
+		$next_sibling = nextElementSibling( $insert_node );
+	}
+
+	if ( $next_sibling ) {
+		// Insert before next sibling.
+		$next_sibling->parentNode->insertBefore( $nodes->importNode( $insert_element, true ), $next_sibling );
+	} else {
+		// Insert as child of parent element.
+		$insert_node->parentNode->appendChild( $nodes->importNode( $insert_element, true ) );
+	}
+}
+
+/**
+ * Returns the next sibling of a node.
+ *
+ * @param object $node DOMElement paragraph object.
+ * @return object Next sibling object.
+ */
+function nextElementSibling( $node ) {
+	while ( $node && ( $node = $node->nextSibling ) ) {
+		if ( $node instanceof \DOMElement ) {
+			break;
+		}
+	}
+	return $node;
+}
+
+/**
+ * Get Dom elements with inserted content.
+ *
+ * @param string|array $insert_content String of content you want to insert or
+ *                                     array of content strings.
+ * @param array        $args           Optional arguments. See: insert_content().
+ * @return array Array of DOMElement objects.
+ */
+function get_insert_elements( $insert_content, $args ) {
+	$insert_elements = is_string( $insert_content ) ? array( $insert_content ) : $insert_content;
+	if ( ! is_array( $insert_elements ) || ! $insert_elements ) {
+		return array();
+	}
+
+	foreach ( $insert_elements as $key => $element ) {
+		$el = get_insert_element( $element, $args );
+		if ( ! $el ) {
+			unset( $insert_elements[ $key ] );
+			continue;
+		}
+
+		$insert_elements[ $key ] = $el;
+	}
+
+	return array_values( $insert_elements );
+}
+
+/**
+ * Get element with content to insert.
+ *
+ * @param string $insert_content Content to insert.
+ * @param array  $args           Optional arguments. See: insert_content().
+ * @return object DOMElement object with inserted content.
+ */
+function get_insert_element( $insert_content, $args ) {
+	if ( ! is_string( $insert_content ) ) {
+		return '';
+	}
+
+	$insert_nodes = new \DOMDocument();
+
+	// Content wrapped in the parent HTML element (to be inserted).
+	$insert_content = "<{$args['insert_element']}>{$insert_content}</{$args['insert_element']}>";
+
+	// Load the HTML nodes from the content to insert.
+	@$insert_nodes->loadHTML( mb_convert_encoding( $insert_content, 'HTML-ENTITIES', 'UTF-8' ) );
+
+	$insert_element = $insert_nodes->getElementsByTagName( $args['insert_element'] )->item( 0 );
+
+	return $insert_element;
 }
 
 /**
@@ -311,46 +417,6 @@ function get_item_index( $nodelist, $args ) {
 	}
 
 	return $nodelist[ $insert_index ];
-}
-
-/**
- * Insert an element (and it's child elements) in the content.
- *
- * @param object $nodes          DOMDocument Object for the content.
- * @param object $insert_node    DOMElement object to insert nodes after.
- * @param object $insert_element DOMElement object to insert.
- * @return void
- */
-function insert_content_element( $nodes, $insert_node, $insert_element ) {
-	$next_sibling = isset( $insert_node->nextSibling ) ? $insert_node->nextSibling : false;
-
-	if ( $next_sibling ) {
-		// get sibling element (exluding text nodes and whitespace).
-		$next_sibling = nextElementSibling( $insert_node );
-	}
-
-	if ( $next_sibling ) {
-		// Insert before next sibling.
-		$next_sibling->parentNode->insertBefore( $nodes->importNode( $insert_element, true ), $next_sibling );
-	} else {
-		// Insert as child of parent element.
-		$insert_node->parentNode->appendChild( $nodes->importNode( $insert_element, true ) );
-	}
-}
-
-/**
- * Returns the next sibling of a node.
- *
- * @param object $node DOMElement paragraph object.
- * @return object Next sibling object.
- */
-function nextElementSibling( $node ) {
-	while ( $node && ( $node = $node->nextSibling ) ) {
-		if ( $node instanceof \DOMElement ) {
-			break;
-		}
-	}
-	return $node;
 }
 
 /**
