@@ -567,7 +567,7 @@ class Insert_Content_Test extends \PHPUnit\Framework\TestCase {
 	}
 
 	function strip_ws( $txt ) {
-		$lines = explode( '\n', $txt );
+		$lines = explode( "\n", $txt );
 		$result = array();
 		foreach ( $lines as $line ) {
 			if ( trim( $line ) ) {
