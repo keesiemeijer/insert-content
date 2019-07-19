@@ -69,8 +69,8 @@ class Insert_Content_Test extends \PHPUnit\Framework\TestCase {
 
 
 	public function test_insert_after_p2() {
-		$content  = "<p>1</p><p>2</p><p>third paragraph</p>";
-		$expected = "<p>1</p><p>2</p><p>inserted paragraph</p><p>third paragraph</p>";
+		$content  = "<p>1</p><p>2</p><p>3</p>";
+		$expected = "<p>1</p><p>2</p><p>inserted paragraph</p><p>3</p>";
 
 		$args = array( 'insert_after_p' => 2 );
 
@@ -81,8 +81,8 @@ class Insert_Content_Test extends \PHPUnit\Framework\TestCase {
 	}
 
 	public function test_insert_after_p2_array() {
-		$content  = "<p>1</p><p>2</p><p>third paragraph</p>";
-		$expected = "<p>1</p><p>2</p><p>inserted paragraph</p><p>third paragraph</p>";
+		$content  = "<p>1</p><p>2</p><p>3</p>";
+		$expected = "<p>1</p><p>2</p><p>inserted paragraph</p><p>3</p>";
 
 		$args = array( 'insert_after_p' => 2 );
 
@@ -93,8 +93,8 @@ class Insert_Content_Test extends \PHPUnit\Framework\TestCase {
 	}
 
 	public function test_parent_id_insert_after_p2() {
-		$content  = '<p>text</p><div id="parent"><p>1</p><p>2</p><p>third paragraph</p></div><p>text</p>';
-		$expected = '<p>text</p><div id="parent"><p>1</p><p>2</p><p>inserted paragraph</p><p>third paragraph</p></div><p>text</p>';
+		$content  = '<p>text</p><div id="parent"><p>1</p><p>2</p><p>3</p></div><p>text</p>';
+		$expected = '<p>text</p><div id="parent"><p>1</p><p>2</p><p>inserted paragraph</p><p>3</p></div><p>text</p>';
 
 		$args = array( 'insert_after_p' => 2, 'parent_element_id' => 'parent' );
 
@@ -105,8 +105,8 @@ class Insert_Content_Test extends \PHPUnit\Framework\TestCase {
 	}
 
 	public function test_parent_id_insert_after_p2_array() {
-		$content  = '<p>text</p><div id="parent"><p>1</p><p>2</p><p>third paragraph</p></div><p>text</p>';
-		$expected = '<p>text</p><div id="parent"><p>1</p><p>2</p><p>inserted paragraph</p><p>third paragraph</p></div><p>text</p>';
+		$content  = '<p>text</p><div id="parent"><p>1</p><p>2</p><p>3</p></div><p>text</p>';
+		$expected = '<p>text</p><div id="parent"><p>1</p><p>2</p><p>inserted paragraph</p><p>3</p></div><p>text</p>';
 
 		$args = array( 'insert_after_p' => 2, 'parent_element_id' => 'parent' );
 
@@ -117,8 +117,8 @@ class Insert_Content_Test extends \PHPUnit\Framework\TestCase {
 	}
 
 	public function test_insert_after_p2_with_child_p() {
-		$content  = "<p>1</p><blockquote><p>blockquote</p></blockquote><p>2</p><p>third paragraph</p>";
-		$expected = "<p>1</p><blockquote><p>blockquote</p></blockquote><p>2</p><p>inserted paragraph</p><p>third paragraph</p>";
+		$content  = "<p>1</p><blockquote><p>blockquote</p></blockquote><p>2</p><p>3</p>";
+		$expected = "<p>1</p><blockquote><p>blockquote</p></blockquote><p>2</p><p>inserted paragraph</p><p>3</p>";
 
 		$args = array( 'insert_after_p' => 2 );
 
@@ -129,8 +129,8 @@ class Insert_Content_Test extends \PHPUnit\Framework\TestCase {
 	}
 
 	public function test_insert_after_p2_with_child_p_array() {
-		$content  = "<p>1</p><blockquote><p>blockquote</p></blockquote><p>2</p><p>third paragraph</p>";
-		$expected = "<p>1</p><blockquote><p>blockquote</p></blockquote><p>2</p><p>inserted paragraph</p><p>third paragraph</p>";
+		$content  = "<p>1</p><blockquote><p>blockquote</p></blockquote><p>2</p><p>3</p>";
+		$expected = "<p>1</p><blockquote><p>blockquote</p></blockquote><p>2</p><p>inserted paragraph</p><p>3</p>";
 
 		$args = array( 'insert_after_p' => 2 );
 
@@ -141,8 +141,8 @@ class Insert_Content_Test extends \PHPUnit\Framework\TestCase {
 	}
 
 	public function test_parent_id_insert_after_p2_with_child_p() {
-		$content  = '<p>text</p><div id="parent"><p>1</p><blockquote><p>blockquote</p></blockquote><p>2</p><p>third paragraph</p></div><p>text</p>';
-		$expected = '<p>text</p><div id="parent"><p>1</p><blockquote><p>blockquote</p></blockquote><p>2</p><p>inserted paragraph</p><p>third paragraph</p></div><p>text</p>';
+		$content  = '<p>text</p><div id="parent"><p>1</p><blockquote><p>blockquote</p></blockquote><p>2</p><p>3</p></div><p>text</p>';
+		$expected = '<p>text</p><div id="parent"><p>1</p><blockquote><p>blockquote</p></blockquote><p>2</p><p>inserted paragraph</p><p>3</p></div><p>text</p>';
 
 		$args = array( 'insert_after_p' => 2, 'parent_element_id' => 'parent' );
 
@@ -153,8 +153,8 @@ class Insert_Content_Test extends \PHPUnit\Framework\TestCase {
 	}
 
 	public function test_parent_id_insert_after_p2_with_child_p_array() {
-		$content  = '<p>text</p><div id="parent"><p>1</p><blockquote><p>blockquote</p></blockquote><p>2</p><p>third paragraph</p></div><p>text</p>';
-		$expected = '<p>text</p><div id="parent"><p>1</p><blockquote><p>blockquote</p></blockquote><p>2</p><p>inserted paragraph</p><p>third paragraph</p></div><p>text</p>';
+		$content  = '<p>text</p><div id="parent"><p>1</p><blockquote><p>blockquote</p></blockquote><p>2</p><p>3</p></div><p>text</p>';
+		$expected = '<p>text</p><div id="parent"><p>1</p><blockquote><p>blockquote</p></blockquote><p>2</p><p>inserted paragraph</p><p>3</p></div><p>text</p>';
 
 		$args = array( 'insert_after_p' => 2, 'parent_element_id' => 'parent' );
 
