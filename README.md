@@ -69,7 +69,7 @@ $args = array(
 ### Parameters
 
 * `$content` (string)(required) String of content (with paragraphs) you want to add content in between.
-* `$insert_content` (string or array) String of content you want to insert. Use an array of content strings if you want to insert differt content with the `insert_every_p` argument below.
+* `$insert_content` (string or array) String of content you want to insert. Use an array of content strings if you want to insert different content with the `insert_every_p` argument below.
 * `$args` (array) Array with optional arguments
   * `parent_element_id` (string) Parent element id (without #) to search paragraphs in.
   Default: empty string. Search for paragraphs in the entire content.
