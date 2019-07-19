@@ -27,7 +27,7 @@ Only top-level (non nested) HTML paragraphs are used to add content after. Let's
 
 Most functions (or scripts) that are similar to this one would wrongly add your content ater the second `<p>` inside the `<blockquote>` element.
 * Set the `top_level_p_only` [argument](https://github.com/keesiemeijer/insert-content#parameters) to `false` to include nested paragraphs as well.
-* Use the `parent_element_id` [argument](https://github.com/keesiemeijer/insert-content#parameters) to only include top-level paragraphs (nested) in an HTML element with a specific id. Set the `top_level_p_only` attribute (from above) to false to also include nested paragraphs found in that HTML element.
+* Use the `parent_element_id` [argument](https://github.com/keesiemeijer/insert-content#parameters) to only include top-level paragraphs (nested) in an HTML element with a specific id.
 
 ### Insert Position
 By default content is inserted after the middle paragraph. In other words, if the HTML content contains four paragraphs it will be inserted after the second.
