@@ -116,7 +116,7 @@ function insert_content( $content, $insert_content = '', $args = array() ) {
 		return $content;
 	}
 
-	// Get paragraph indexes where content should be inserted after.
+	// Get paragraph indexes where content could be inserted after.
 	$nodelist = get_node_indexes( $p, $args );
 
 	// Check if paragraphs are found.
@@ -181,15 +181,10 @@ function insert_nodes( $nodes, $insert_elements, $p, $nodelist, $args ) {
 			return insert_node( $nodes, $insert_elements[0], $p, $nodelist, $args );
 		}
 
-		$inserted = false;
-		$range    = range( $step, $node_count, $step );
-
-		// Loop backwards when inserting to not change the nodes indexes.
-		$range = array_values( array_reverse( $range ) );
-
-		$range_count = count( $range );
-		$el_index    = 0;
-		$last_index  = 0;
+		$range      = range( $step, $node_count, $step );
+		$inserted   = false;
+		$el_index   = 0;
+		$last_index = 0;
 
 		// Find the last index
 		foreach ( $range as $index ) {
@@ -198,6 +193,10 @@ function insert_nodes( $nodes, $insert_elements, $p, $nodelist, $args ) {
 			$el_index++;
 		}
 
+		// Loop backwards when inserting to not change the nodes indexes.
+		$range = array_values( array_reverse( $range ) );
+
+		// Set start index to last index
 		$el_index = $last_index;
 		foreach ( $range as $key => $index ) {
 			$_args['insert_after_p'] = $index;
@@ -313,7 +312,7 @@ function get_insert_elements( $insert_content, $args ) {
  *
  * @param string $insert_content Content to insert.
  * @param array  $args           Optional arguments. See: insert_content().
- * @return object DOMElement object with inserted content.
+ * @return object|bool DOMElement object with inserted content or false.
  */
 function get_insert_element( $insert_content, $args ) {
 	if ( ! is_string( $insert_content ) ) {
@@ -328,9 +327,9 @@ function get_insert_element( $insert_content, $args ) {
 	// Load the HTML nodes from the content to insert.
 	@$insert_nodes->loadHTML( mb_convert_encoding( $insert_content, 'HTML-ENTITIES', 'UTF-8' ) );
 
-	$insert_element = $insert_nodes->getElementsByTagName( $args['insert_element'] )->item( 0 );
+	$insert_element = $insert_nodes->getElementsByTagName( $args['insert_element'] );
 
-	return $insert_element;
+	return $insert_element->length ? $insert_element->item( 0 ) : false;
 }
 
 /**
@@ -379,7 +378,6 @@ function get_node_indexes( $nodes, $args ) {
  * @return int|false Index of the (paragraph) node or false.
  */
 function get_item_index( $nodelist, $args ) {
-
 	if ( empty( $nodelist ) ) {
 		return false;
 	}
