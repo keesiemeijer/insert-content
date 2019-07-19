@@ -3,9 +3,6 @@ namespace keesiemeijer\Insert_Content;
 
 class Insert_Content_Test extends \PHPUnit\Framework\TestCase {
 
-	public function setUp() { }
-	public function tearDown() { }
-
 	/**
 	 * @dataProvider addDataProvider
 	 */
